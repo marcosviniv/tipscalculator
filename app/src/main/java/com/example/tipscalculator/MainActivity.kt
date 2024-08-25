@@ -1,6 +1,7 @@
 package com.example.tipscalculator
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
@@ -17,20 +18,6 @@ import com.google.android.material.textfield.TextInputEditText
 
 class MainActivity : AppCompatActivity() {
 
-    // Valor  total da conta
-    // Número de Pessoas
-    // Porcentagem da Gorjeta
-    // 10% , 15% ou 20%
-    // Calcular
-    // Limpar
-
-    // Recuperar as Views do Layout
-    // View Binding
-
-    // Recuperar radio buttons
-    // Calculo de Tips
-    // Mostrar resultado
-
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,71 +25,49 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        var percentage: Int = 0
-
-        binding.rbOptionOne.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked) {
-                percentage = 10
-            }
-        }
-
-        binding.rbOptionTwo.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked) {
-                percentage = 15
-            }
-        }
-
-        binding.rbOptionThree.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked) {
-                percentage = 20
-            }
-        }
-
-        binding.btnClean.setOnClickListener {
-            binding.tvResult.text = ""
-            binding.tieTotal.setText("")
-            binding.spinerNumberOfPeople.setSelection(0)
-            binding.rbOptionOne.isChecked = false
-            binding.rbOptionTwo.isChecked = false
-            binding.rbOptionThree.isChecked = false
-        }
-
-        // Spinner + Adapter
-        val adapter = ArrayAdapter.createFromResource(
-            this,
-            R.array.num_people,
-            android.R.layout.simple_spinner_item
-        )
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        binding.spinerNumberOfPeople.adapter = adapter
-
-        var numOfPeopleSelected = 0
-        binding.spinerNumberOfPeople.onItemSelectedListener =
-            object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                numOfPeopleSelected = position
-                }
-
-                override fun onNothingSelected(p0: AdapterView<*>?){}
-            }
 
         binding.btnDone.setOnClickListener {
 
             val totalTableTemp = binding.tieTotal.text
+            val numPeopleTemp = binding.tieNumPeople.text
+            val percentageTemp = binding.tiePercentage.text
 
-            if (totalTableTemp?.isEmpty() == true) {
-                Snackbar.make(binding.tieTotal, "Preencha todos os campos", Snackbar.LENGTH_LONG)
+            if (totalTableTemp?.isEmpty() == true || numPeopleTemp?.isEmpty() == true || percentageTemp?.isEmpty() == true) {
+                Snackbar.make(binding.tieTotal, "Fill in all fields", Snackbar.LENGTH_LONG)
                     .show()
             } else {
-                val totalAmount: Float = totalTableTemp.toString().toFloat()
-                val nPeople: Int = numOfPeopleSelected
-                val totalTemp = totalAmount / nPeople
-                val tips = totalTemp * percentage / 100
+                val totalTable: Float = totalTableTemp.toString().toFloat()
+                val nPeople: Int = numPeopleTemp.toString().toInt()
+                val totalTemp = totalTable / nPeople
+                val percentage: Int = percentageTemp.toString().toInt()
+                val tips = totalTemp * percentageTemp.toString().toInt() / 100
                 val totalWithTips = totalTemp + tips
-                binding.tvResult.text = "Total with tips: $totalWithTips"
-            }
 
+                val intent = Intent(this, SummaryActivity::class.java)
+                intent.apply {
+                    putExtra("totalTable", totalTable)
+                    putExtra("numPeople", nPeople)
+                    putExtra("percentage", percentage)
+                    putExtra("totalWithTips", totalWithTips)
+                }
+                clean()
+                startActivity(intent)
+
+            }
+            binding.btnClean.setOnClickListener {
+                clean()
+            }
         }
 
     }
+
+    private fun clean() {
+        binding.tieTotal.setText("")
+        binding.tiePercentage.setText("")
+        binding.tieNumPeople.setText("")
+
+    }
+
 }
+
+
