@@ -24,10 +24,10 @@ class SummaryActivity : AppCompatActivity() {
         val percentage = intent.getIntExtra("percentage", 0)
         val totalWithTips = intent.getFloatExtra("totalWithTips", 0.0f)
 
-        bindind.tvTotalTable.text = totalTable.toString()
+        bindind.tvTotalTable.text = "$" + totalTable.toString()
         bindind.tvNumPeople.text = numPeople.toString()
-        bindind.tvPercentage.text = percentage.toString()+"%"
-        bindind.tvTotalAmount.text = totalWithTips.toString()
+        bindind.tvPercentage.text = percentage.toString() + "%"
+        bindind.tvTotalAmount.text = "$" + totalWithTips.toString()
 
         bindind.btnRefresh.setOnClickListener {
             finish()
